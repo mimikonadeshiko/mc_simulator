@@ -3,60 +3,134 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>マックおすすめシミュレーター</title>
+    <title>v3マックおすすめシミュレーター</title>
     <style>
+        :root {
+            --main: #ffbc0e;
+            --main-dark: #d19b00;
+            --main-light: #ffe099;
+        }
+
         body {
-            font-family: "Helvetica Neue", sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
-            max-width: 600px;
+            font-family: "Helvetica Neue", "Roboto", Arial, sans-serif;
+            background: linear-gradient(120deg, #fff9e3 0%, #ffe6a7 100%);
+            color: #212121;
+            max-width: 420px;
             margin: 2rem auto;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 2px solid var(--main);
+            position: relative;
         }
 
         h1 {
             text-align: center;
             font-size: 1.6rem;
+            color: var(--main-dark);
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        #stepper,
+        #resultScreen {
+            animation: fadeIn .3s;
+        }
+
+        .step {
+            margin-bottom: 2rem;
+            background: #fffdfa;
+            padding: 2rem 1.2rem 1.2rem 1.2rem;
+            border-radius: 13px;
+            border: 1.5px solid var(--main-light);
+            box-shadow: 0 3px 8px rgba(255, 188, 14, 0.08);
+        }
+
+        h2 {
+            color: var(--main-dark);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
         }
 
         select {
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.7rem 0.7rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--main-light);
+            border-radius: 7px;
+            font-size: 1.02rem;
+            background: #fffbe7;
+            color: #212121;
+            transition: border-color .15s;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--main);
+        }
+
+        button,
+        .main-btn {
+            padding: 0.7rem 1.4rem;
+            font-size: 1.06rem;
+            background: var(--main);
+            color: #322600;
+            border: none;
+            border-radius: 8px;
+            margin-right: 1rem;
             margin-bottom: 1rem;
-            border: 1px solid #ccc;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(255, 188, 14, 0.09);
+            transition: background .2s, color .2s;
+        }
+
+        button[disabled],
+        .main-btn[disabled] {
+            background: #ffe7a9;
+            color: #ada07d;
+            cursor: not-allowed;
+            opacity: 0.68;
+        }
+
+        button:hover:enabled,
+        .main-btn:hover:enabled {
+            background: var(--main-dark);
+            color: #fffdfa;
+        }
+
+        .result-box {
+            background: #fffdfa;
+            border-radius: 14px;
+            padding: 2rem 1.1rem 1.2rem 1.1rem;
+            border: 2px solid var(--main);
+            margin-bottom: 2.2rem;
+            box-shadow: 0 2px 8px rgba(255, 188, 14, 0.09);
+        }
+
+        #historyOutput {
+            background: #fffbec;
+            border: 1.5px solid var(--main-light);
             border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin: 0.8rem 0 0 0;
+            min-height: 2rem;
             font-size: 1rem;
+            word-break: break-all;
         }
 
-        .result {
-            background: #fff;
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 5px solid #FFBC0D;
-        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
 
-        .result h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 0.5rem;
-        }
-
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 0.5rem;
-            text-align: left;
-        }
-
-        th {
-            background-color: #eee;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -100,9 +174,15 @@
             <button id="submitOrder" disabled>注文確定</button>
         </div>
     </div>
-    <div class="result" id="recommendation">
-        <h2>おすすめ結果</h2>
-        <div id="output">セット内容を順番に選んでください。</div>
+
+    <div id="resultScreen" style="display: none;">
+        <div class="result-box">
+            <h2>おすすめ結果</h2>
+            <div id="output"></div>
+            <h2>📜 最近の注文履歴（最新10件）</h2>
+            <div id="historyOutput">履歴を取得中...</div>
+            <button id="backToOrder" class="main-btn">もう一度注文する</button>
+        </div>
     </div>
 
     <script>
@@ -153,6 +233,7 @@
         const step2 = document.getElementById('step2');
         const step3 = document.getElementById('step3');
         const output = document.getElementById('output');
+        const resultScreen = document.getElementById('resultScreen');
 
         // ステップ遷移制御
         burgerSelect.addEventListener('change', () => {
@@ -188,10 +269,21 @@
             const side = sideSelect.value;
             const drink = drinkSelect.value;
             const totalScore = burgerScores[burger] + sideScores[side] + drinkScores[drink];
-            output.innerHTML = `${burgerNames[burger]} + ${sideNames[side]} + ${drinkNames[drink]} のセットがおすすめです！（相性スコア：${totalScore.toFixed(2)}）`;
+            document.getElementById("output").innerHTML =
+                `${burgerNames[burger]} + ${sideNames[side]} + ${drinkNames[drink]} のセットがおすすめです！（相性スコア：${totalScore.toFixed(2)}）`;
             await saveToSupabase(burger, side, drink, totalScore);
-            // UIリセット（最初に戻す）
+            // ステッパーUIを隠し、結果画面だけ表示
+            step1.style.display = 'none';
+            step2.style.display = 'none';
             step3.style.display = 'none';
+            resultScreen.style.display = '';
+            // タイトルバージョン番号増加
+            updateTitleVersion();
+        });
+
+        // 「もう一度注文」ボタン
+        document.getElementById('backToOrder').addEventListener('click', () => {
+            resultScreen.style.display = 'none';
             step1.style.display = '';
             burgerSelect.value = '';
             sideSelect.value = '';
@@ -201,6 +293,15 @@
             submitOrder.disabled = true;
         });
 
+        function updateTitleVersion() {
+            const title = document.title;
+            const match = title.match(/v(\d+)/);
+            if (match) {
+                const v = parseInt(match[1]) + 1;
+                document.title = title.replace(/v\d+/, `v${v}`);
+            }
+        }
+
         // 初期UI状態
         nextToSide.disabled = true;
         nextToDrink.disabled = true;
@@ -209,12 +310,8 @@
         step2.style.display = 'none';
         step3.style.display = 'none';
         output.innerHTML = 'セット内容を順番に選んでください。';
-    </script>
 
-    <div class="result" id="history">
-        <h2>📜 最近の注文履歴（最新10件）</h2>
-        <div id="historyOutput">履歴を取得中...</div>
-    </div>
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -224,7 +321,15 @@
         );
 
         async function saveToSupabase(burger, side, drink, score) {
-            await supabase.from("history").insert([{ burger, side, drink, score }]);
+            // サイドとドリンクを結合して「selected」に保存
+            const selected = sideNames[side] + " + " + drinkNames[drink];
+            const { error } = await supabase.from("history").insert([
+                { burger: burgerNames[burger], selected, score }
+            ]);
+            if (error) {
+                alert("Supabaseへの保存エラー: " + error.message);
+                console.error(error);
+            }
             fetchHistory();
         }
 
@@ -240,23 +345,9 @@
                 return;
             }
 
-            const grouped = {};
-            data.forEach(row => {
-                const key = `${row.burger} + ${row.side}`;
-                if (!grouped[key]) grouped[key] = {};
-                if (!grouped[key][row.drink]) grouped[key][row.drink] = 0;
-                grouped[key][row.drink]++;
-            });
-
             let html = "";
-            Object.entries(grouped).forEach(([combo, drinks]) => {
-                html += `<div><strong>${combo}</strong> によく合うドリンク:</div><ul>`;
-                Object.entries(drinks)
-                    .sort((a, b) => b[1] - a[1])
-                    .forEach(([drink, count]) => {
-                        html += `<li>${drink}（${count}件）</li>`;
-                    });
-                html += "</ul>";
+            data.forEach(row => {
+                html += `<div><strong>${row.burger}</strong> セット: ${row.selected}（スコア: ${row.score.toFixed(2)}）</div>`;
             });
 
             document.getElementById("historyOutput").innerHTML = html || "履歴がまだありません。";
