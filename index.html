@@ -8,20 +8,23 @@
         :root {
             --main: #ffbc0e;
             --main-dark: #d19b00;
-            --main-light: #ffe099;
+            --main-light: #fff5d6;
+            --base-bg: #fafafa;
+            --card-bg: #fff;
+            --border: #ededed;
+            --text: #212121;
         }
 
         body {
             font-family: "Helvetica Neue", "Roboto", Arial, sans-serif;
-            background: linear-gradient(120deg, #fff9e3 0%, #ffe6a7 100%);
-            color: #212121;
+            background: var(--base-bg);
+            color: var(--text);
             max-width: 420px;
-            margin: 2rem auto;
+            margin: 2.5rem auto;
             padding: 2.5rem 1.5rem 1.5rem 1.5rem;
             border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            border: 2px solid var(--main);
-            position: relative;
+            box-shadow: 0 6px 32px rgba(0, 0, 0, 0.10);
+            border: 1.5px solid var(--border);
         }
 
         h1 {
@@ -38,37 +41,44 @@
             animation: fadeIn .3s;
         }
 
-        .step {
-            margin-bottom: 2rem;
-            background: #fffdfa;
+        .step,
+        .result-box {
+            background: var(--card-bg);
             padding: 2rem 1.2rem 1.2rem 1.2rem;
-            border-radius: 13px;
-            border: 1.5px solid var(--main-light);
-            box-shadow: 0 3px 8px rgba(255, 188, 14, 0.08);
+            border-radius: 12px;
+            border: 1.7px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2rem;
+        }
+
+        .result-box {
+            border: 2.2px solid var(--main);
         }
 
         h2 {
             color: var(--main-dark);
-            font-size: 1.2rem;
+            font-size: 1.17rem;
             font-weight: 600;
             margin-bottom: 1.2rem;
+            letter-spacing: 0.5px;
         }
 
         select {
             width: 100%;
             padding: 0.7rem 0.7rem;
             margin-bottom: 1.5rem;
-            border: 2px solid var(--main-light);
+            border: 2px solid var(--border);
             border-radius: 7px;
             font-size: 1.02rem;
-            background: #fffbe7;
-            color: #212121;
+            background: #f8f8f8;
+            color: var(--text);
             transition: border-color .15s;
             outline: none;
         }
 
         select:focus {
             border-color: var(--main);
+            background: var(--main-light);
         }
 
         button,
@@ -83,14 +93,14 @@
             margin-bottom: 1rem;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(255, 188, 14, 0.09);
+            box-shadow: 0 2px 4px rgba(255, 188, 14, 0.06);
             transition: background .2s, color .2s;
         }
 
         button[disabled],
         .main-btn[disabled] {
-            background: #ffe7a9;
-            color: #ada07d;
+            background: #fffbe6;
+            color: #b3a977;
             cursor: not-allowed;
             opacity: 0.68;
         }
@@ -101,18 +111,9 @@
             color: #fffdfa;
         }
 
-        .result-box {
-            background: #fffdfa;
-            border-radius: 14px;
-            padding: 2rem 1.1rem 1.2rem 1.1rem;
-            border: 2px solid var(--main);
-            margin-bottom: 2.2rem;
-            box-shadow: 0 2px 8px rgba(255, 188, 14, 0.09);
-        }
-
         #historyOutput {
-            background: #fffbec;
-            border: 1.5px solid var(--main-light);
+            background: #f5f5f5;
+            border: 1.5px solid var(--border);
             border-radius: 8px;
             padding: 0.8rem 1rem;
             margin: 0.8rem 0 0 0;
