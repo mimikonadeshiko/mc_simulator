@@ -64,35 +64,45 @@
 <body>
     <h1>🍔 マックおすすめシミュレーター</h1>
 
-    <label for="burger">バーガーを選ぶ：</label>
-    <select id="burger">
-        <option value="">-- 選択してください --</option>
-        <option value="hamburger">ハンバーガー</option>
-        <option value="dblcheese">ダブルチーズバーガー</option>
-        <option value="bigmac">ビッグマック</option>
-        <option value="fish">フィレオフィッシュ</option>
-    </select>
-
-    <label for="side">サイドメニューを選ぶ：</label>
-    <select id="side">
-        <option value="">-- 選択してください --</option>
-        <option value="potato">ポテト</option>
-        <option value="nugget">ナゲット</option>
-        <option value="salad">サラダ</option>
-    </select>
-
-    <label for="drink">ドリンクを選ぶ：</label>
-    <select id="drink">
-        <option value="">-- 選択してください --</option>
-        <option value="cola">コーラ</option>
-        <option value="tea">爽健美茶</option>
-        <option value="icedtea">アイスティー</option>
-        <option value="fanta">ファンタ</option>
-    </select>
-
+    <div id="stepper">
+        <div id="step1" class="step">
+            <h2>1. セットにするバーガーを選択</h2>
+            <select id="burger">
+                <option value="">-- 選択してください --</option>
+                <option value="hamburger">ハンバーガー</option>
+                <option value="dblcheese">ダブルチーズバーガー</option>
+                <option value="bigmac">ビッグマック</option>
+                <option value="fish">フィレオフィッシュ</option>
+            </select>
+            <button id="nextToSide" disabled>次へ</button>
+        </div>
+        <div id="step2" class="step" style="display:none;">
+            <h2>2. セット内容（サイド）を選択</h2>
+            <select id="side">
+                <option value="">-- 選択してください --</option>
+                <option value="potato">ポテト</option>
+                <option value="nugget">ナゲット</option>
+                <option value="salad">サラダ</option>
+            </select>
+            <button id="backToBurger">戻る</button>
+            <button id="nextToDrink" disabled>次へ</button>
+        </div>
+        <div id="step3" class="step" style="display:none;">
+            <h2>3. セット内容（ドリンク）を選択</h2>
+            <select id="drink">
+                <option value="">-- 選択してください --</option>
+                <option value="cola">コーラ</option>
+                <option value="tea">爽健美茶</option>
+                <option value="icedtea">アイスティー</option>
+                <option value="fanta">ファンタ</option>
+            </select>
+            <button id="backToSide">戻る</button>
+            <button id="submitOrder" disabled>注文確定</button>
+        </div>
+    </div>
     <div class="result" id="recommendation">
         <h2>おすすめ結果</h2>
-        <div id="output">選択に基づいたおすすめを表示します。</div>
+        <div id="output">セット内容を順番に選んでください。</div>
     </div>
 
     <script>
@@ -102,33 +112,28 @@
             bigmac: 1.15,
             fish: 0.95
         };
-
         const sideScores = {
             potato: 0.70,
             nugget: 0.70,
             salad: 0.40
         };
-
         const drinkScores = {
             cola: 0.70,
             tea: 0.55,
             icedtea: 0.60,
             fanta: 0.65
         };
-
         const burgerNames = {
             hamburger: '🍔ハンバーガー',
             dblcheese: '🧀ダブルチーズバーガー',
             bigmac: '🍔ビッグマック',
             fish: '🐟フィレオフィッシュ'
         };
-
         const sideNames = {
             potato: '🍟ポテト',
             nugget: '🍗ナゲット',
             salad: '🥗サラダ'
         };
-
         const drinkNames = {
             cola: '🥤コーラ',
             tea: '🍵爽健美茶',
@@ -139,53 +144,71 @@
         const burgerSelect = document.getElementById('burger');
         const sideSelect = document.getElementById('side');
         const drinkSelect = document.getElementById('drink');
+        const nextToSide = document.getElementById('nextToSide');
+        const nextToDrink = document.getElementById('nextToDrink');
+        const submitOrder = document.getElementById('submitOrder');
+        const backToBurger = document.getElementById('backToBurger');
+        const backToSide = document.getElementById('backToSide');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
         const output = document.getElementById('output');
 
-        function updateRecommendation() {
+        // ステップ遷移制御
+        burgerSelect.addEventListener('change', () => {
+            nextToSide.disabled = !burgerSelect.value;
+        });
+        sideSelect.addEventListener('change', () => {
+            nextToDrink.disabled = !sideSelect.value;
+        });
+        drinkSelect.addEventListener('change', () => {
+            submitOrder.disabled = !drinkSelect.value;
+        });
+
+        nextToSide.addEventListener('click', () => {
+            step1.style.display = 'none';
+            step2.style.display = '';
+        });
+        backToBurger.addEventListener('click', () => {
+            step2.style.display = 'none';
+            step1.style.display = '';
+        });
+        nextToDrink.addEventListener('click', () => {
+            step2.style.display = 'none';
+            step3.style.display = '';
+        });
+        backToSide.addEventListener('click', () => {
+            step3.style.display = 'none';
+            step2.style.display = '';
+        });
+
+        // 注文確定
+        submitOrder.addEventListener('click', async () => {
             const burger = burgerSelect.value;
             const side = sideSelect.value;
             const drink = drinkSelect.value;
+            const totalScore = burgerScores[burger] + sideScores[side] + drinkScores[drink];
+            output.innerHTML = `${burgerNames[burger]} + ${sideNames[side]} + ${drinkNames[drink]} のセットがおすすめです！（相性スコア：${totalScore.toFixed(2)}）`;
+            await saveToSupabase(burger, side, drink, totalScore);
+            // UIリセット（最初に戻す）
+            step3.style.display = 'none';
+            step1.style.display = '';
+            burgerSelect.value = '';
+            sideSelect.value = '';
+            drinkSelect.value = '';
+            nextToSide.disabled = true;
+            nextToDrink.disabled = true;
+            submitOrder.disabled = true;
+        });
 
-            if (burger && side && drink) {
-                const totalScore = burgerScores[burger] + sideScores[side] + drinkScores[drink];
-                output.innerHTML = `${burgerNames[burger]} + ${sideNames[side]} + ${drinkNames[drink]} のセットがおすすめです！（相性スコア：${totalScore.toFixed(2)}）`;
-            } else if (burger && side && !drink) {
-                const drinkOptions = Object.entries(drinkScores)
-                    .map(([key, value]) => {
-                        const score = burgerScores[burger] + sideScores[side] + value;
-                        return { name: drinkNames[key], score };
-                    })
-                    .sort((a, b) => b.score - a.score)
-                    .slice(0, 3);
-
-                let table = '<table><tr><th>ドリンク</th><th>スコア</th></tr>';
-                drinkOptions.forEach(opt => {
-                    table += `<tr><td>${opt.name}</td><td>${opt.score.toFixed(2)}</td></tr>`;
-                });
-                table += '</table>';
-
-                output.innerHTML = `${burgerNames[burger]} + ${sideNames[side]} に合うドリンク候補：` + table;
-            } else if (burger && !side && drink) {
-                const sideOptions = Object.entries(sideScores)
-                    .map(([key, value]) => {
-                        const score = burgerScores[burger] + value + drinkScores[drink];
-                        return { name: sideNames[key], score };
-                    })
-                    .sort((a, b) => b.score - a.score)
-                    .slice(0, 3);
-
-                let table = '<table><tr><th>サイドメニュー</th><th>スコア</th></tr>';
-                sideOptions.forEach(opt => {
-                    table += `<tr><td>${opt.name}</td><td>${opt.score.toFixed(2)}</td></tr>`;
-                });
-                table += '</table>';
-
-                output.innerHTML = `${burgerNames[burger]} + ${drinkNames[drink]} に合うサイド候補：` + table;
-            } else {
-                output.textContent = `バーガーとサイド、またはバーガーとドリンクを選ぶとおすすめが表示されます。`;
-            }
-        }
-
+        // 初期UI状態
+        nextToSide.disabled = true;
+        nextToDrink.disabled = true;
+        submitOrder.disabled = true;
+        step1.style.display = '';
+        step2.style.display = 'none';
+        step3.style.display = 'none';
+        output.innerHTML = 'セット内容を順番に選んでください。';
     </script>
 
     <div class="result" id="history">
@@ -238,29 +261,6 @@
 
             document.getElementById("historyOutput").innerHTML = html || "履歴がまだありません。";
         }
-
-        async function handleSaveIfComplete() {
-            const burger = burgerSelect.value;
-            const side = sideSelect.value;
-            const drink = drinkSelect.value;
-            if (burger && side && drink) {
-                const score = burgerScores[burger] + sideScores[side] + drinkScores[drink];
-                await saveToSupabase(burger, side, drink, score);
-            }
-        }
-
-        burgerSelect.addEventListener('change', () => {
-            updateRecommendation();
-            handleSaveIfComplete();
-        });
-        sideSelect.addEventListener('change', () => {
-            updateRecommendation();
-            handleSaveIfComplete();
-        });
-        drinkSelect.addEventListener('change', () => {
-            updateRecommendation();
-            handleSaveIfComplete();
-        });
 
         fetchHistory();
     </script>
