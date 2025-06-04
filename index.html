@@ -271,6 +271,11 @@
     </div>
 
     <script>
+        // Supabase初期化
+        const supabase = supabase.createClient(
+            "https://kqxhouskupmjvjcojfj.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.abcdefghijk1234567890ABCDEFGHIJ"
+        );
         const burgerScores = {
             hamburger: 1.00,
             dblcheese: 1.10,
@@ -432,24 +437,7 @@
             }
         }
 
-        // 初期UI状態
-        nextToSide.disabled = true;
-        nextToDrink.disabled = true;
-        submitOrder.disabled = true;
-        step1.style.display = '';
-        step2.style.display = 'none';
-        step3.style.display = 'none';
-        output.innerHTML = 'セット内容を順番に選んでください。';
-
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabase = supabase.createClient(
-            "https://kqxhouskupmjvjcojfj.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.abcdefghijk1234567890ABCDEFGHIJ"
-        );
-
+        // Supabase保存・履歴取得
         async function saveToSupabase(burger, side, drink, score) {
             const selected = sideNames[side] + " + " + drinkNames[drink];
             const { error } = await supabase.from("history").insert([
@@ -485,7 +473,18 @@
         }
 
         fetchHistory();
+
+        // 初期UI状態
+        nextToSide.disabled = true;
+        nextToDrink.disabled = true;
+        submitOrder.disabled = true;
+        step1.style.display = '';
+        step2.style.display = 'none';
+        step3.style.display = 'none';
+        output.innerHTML = 'セット内容を順番に選んでください。';
+
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 
 </html>
