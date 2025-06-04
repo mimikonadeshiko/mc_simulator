@@ -63,24 +63,6 @@
             letter-spacing: 0.5px;
         }
 
-        select {
-            width: 100%;
-            padding: 0.7rem 0.7rem;
-            margin-bottom: 1.5rem;
-            border: 2px solid var(--border);
-            border-radius: 7px;
-            font-size: 1.02rem;
-            background: #f8f8f8;
-            color: var(--text);
-            transition: border-color .15s;
-            outline: none;
-        }
-
-        select:focus {
-            border-color: var(--main);
-            background: var(--main-light);
-        }
-
         button,
         .main-btn {
             padding: 0.7rem 1.4rem;
@@ -133,6 +115,67 @@
                 transform: translateY(0);
             }
         }
+
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.1rem;
+            margin-bottom: 1.4rem;
+            justify-content: center;
+        }
+
+        .item-card {
+            background: var(--card-bg);
+            border: 2.4px solid var(--border);
+            border-radius: 14px;
+            width: 145px;
+            min-height: 185px;
+            padding: 1rem 1rem 0.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            cursor: pointer;
+            transition: border 0.2s, box-shadow 0.18s, background 0.17s;
+            position: relative;
+            outline: none;
+        }
+
+        .item-card.selected {
+            border: 2.6px solid var(--main);
+            box-shadow: 0 3px 12px rgba(255, 188, 14, 0.11);
+            background: var(--main-light);
+        }
+
+        .item-card:hover:not(.selected),
+        .item-card:focus-visible:not(.selected) {
+            border: 2.4px solid var(--main-dark);
+            background: #fffdeb;
+        }
+
+        .item-card img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 0.8rem;
+            border-radius: 8px;
+            background: #f6f6f6;
+        }
+
+        .item-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.03em;
+        }
+
+        .item-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #232323;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 
@@ -142,35 +185,76 @@
     <div id="stepper">
         <div id="step1" class="step">
             <h2>1. セットにするバーガーを選択</h2>
-            <select id="burger">
-                <option value="">-- 選択してください --</option>
-                <option value="hamburger">ハンバーガー</option>
-                <option value="dblcheese">ダブルチーズバーガー</option>
-                <option value="bigmac">ビッグマック</option>
-                <option value="fish">フィレオフィッシュ</option>
-            </select>
+            <div class="card-grid" id="burgerGrid">
+                <div class="item-card" data-value="hamburger" tabindex="0">
+                    <img src="images/dafault.png" alt="ハンバーガー" />
+                    <div class="item-name">ハンバーガー</div>
+                    <div class="item-price">¥190〜</div>
+                </div>
+                <div class="item-card" data-value="dblcheese" tabindex="0">
+                    <img src="images/dabuchi.png" alt="ダブルチーズバーガー" />
+                    <div class="item-name">ダブルチーズバーガー</div>
+                    <div class="item-price">¥370〜</div>
+                </div>
+                <div class="item-card" data-value="bigmac" tabindex="0">
+                    <img src="images/bigma.png" alt="ビッグマック" />
+                    <div class="item-name">ビッグマック</div>
+                    <div class="item-price">¥450〜</div>
+                </div>
+                <div class="item-card" data-value="fish" tabindex="0">
+                    <img src="images/fish.png" alt="フィレオフィッシュ" />
+                    <div class="item-name">フィレオフィッシュ</div>
+                    <div class="item-price">¥390〜</div>
+                </div>
+            </div>
             <button id="nextToSide" disabled>次へ</button>
         </div>
         <div id="step2" class="step" style="display:none;">
             <h2>2. セット内容（サイド）を選択</h2>
-            <select id="side">
-                <option value="">-- 選択してください --</option>
-                <option value="potato">ポテト</option>
-                <option value="nugget">ナゲット</option>
-                <option value="salad">サラダ</option>
-            </select>
+            <div class="card-grid" id="sideGrid">
+                <div class="item-card" data-value="potato" tabindex="0">
+                    <img src="images/fried.png" alt="ポテト" />
+                    <div class="item-name">ポテト</div>
+                    <div class="item-price">+¥0</div>
+                </div>
+                <div class="item-card" data-value="nugget" tabindex="0">
+                    <img src="images/nugget.png" alt="ナゲット" />
+                    <div class="item-name">ナゲット</div>
+                    <div class="item-price">+¥60</div>
+                </div>
+                <div class="item-card" data-value="salad" tabindex="0">
+                    <img src="images/sald.png" alt="サラダ" />
+                    <div class="item-name">サラダ</div>
+                    <div class="item-price">+¥50</div>
+                </div>
+            </div>
             <button id="backToBurger">戻る</button>
             <button id="nextToDrink" disabled>次へ</button>
         </div>
         <div id="step3" class="step" style="display:none;">
             <h2>3. セット内容（ドリンク）を選択</h2>
-            <select id="drink">
-                <option value="">-- 選択してください --</option>
-                <option value="cola">コーラ</option>
-                <option value="tea">爽健美茶</option>
-                <option value="icedtea">アイスティー</option>
-                <option value="fanta">ファンタ</option>
-            </select>
+            <div class="card-grid" id="drinkGrid">
+                <div class="item-card" data-value="cola" tabindex="0">
+                    <img src="images/drink_coke.png" alt="コーラ" />
+                    <div class="item-name">コーラ</div>
+                    <div class="item-price">+¥0</div>
+                </div>
+                <div class="item-card" data-value="tea" tabindex="0">
+                    <img src="images/ice_tea_so.png" alt="爽健美茶" />
+                    <div class="item-name">爽健美茶</div>
+                    <div class="item-price">+¥0</div>
+                </div>
+                <div class="item-card" data-value="icedtea" tabindex="0">
+                    <img src="images/ice_tea.png" alt="アイスティー" />
+                    <div class="item-name">アイスティー</div>
+                    <div class="item-price">+¥0</div>
+                </div>
+                <div class="item-card" data-value="fanta" tabindex="0">
+                    <img src="images/drink_f.png" alt="ファンタ" />
+                    <div class="item-name">ファンタ</div>
+                    <div class="item-price">+¥0</div>
+                </div>
+            </div>
             <button id="backToSide">戻る</button>
             <button id="submitOrder" disabled>注文確定</button>
         </div>
@@ -222,9 +306,6 @@
             fanta: '🍇ファンタ'
         };
 
-        const burgerSelect = document.getElementById('burger');
-        const sideSelect = document.getElementById('side');
-        const drinkSelect = document.getElementById('drink');
         const nextToSide = document.getElementById('nextToSide');
         const nextToDrink = document.getElementById('nextToDrink');
         const submitOrder = document.getElementById('submitOrder');
@@ -236,17 +317,62 @@
         const output = document.getElementById('output');
         const resultScreen = document.getElementById('resultScreen');
 
-        // ステップ遷移制御
-        burgerSelect.addEventListener('change', () => {
-            nextToSide.disabled = !burgerSelect.value;
-        });
-        sideSelect.addEventListener('change', () => {
-            nextToDrink.disabled = !sideSelect.value;
-        });
-        drinkSelect.addEventListener('change', () => {
-            submitOrder.disabled = !drinkSelect.value;
+        let selectedBurger = null;
+        let selectedSide = null;
+        let selectedDrink = null;
+
+        // バーガーカード選択制御
+        const burgerCardList = Array.from(document.querySelectorAll('#burgerGrid .item-card'));
+        burgerCardList.forEach(el => {
+            el.addEventListener('click', () => {
+                burgerCardList.forEach(card => card.classList.remove('selected'));
+                el.classList.add('selected');
+                selectedBurger = el.dataset.value;
+                nextToSide.disabled = !selectedBurger;
+            });
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    el.click();
+                }
+            });
         });
 
+        // サイドカード選択制御
+        const sideCardList = Array.from(document.querySelectorAll('#sideGrid .item-card'));
+        sideCardList.forEach(el => {
+            el.addEventListener('click', () => {
+                sideCardList.forEach(card => card.classList.remove('selected'));
+                el.classList.add('selected');
+                selectedSide = el.dataset.value;
+                nextToDrink.disabled = !selectedSide;
+            });
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    el.click();
+                }
+            });
+        });
+
+        // ドリンクカード選択制御
+        const drinkCardList = Array.from(document.querySelectorAll('#drinkGrid .item-card'));
+        drinkCardList.forEach(el => {
+            el.addEventListener('click', () => {
+                drinkCardList.forEach(card => card.classList.remove('selected'));
+                el.classList.add('selected');
+                selectedDrink = el.dataset.value;
+                submitOrder.disabled = !selectedDrink;
+            });
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    el.click();
+                }
+            });
+        });
+
+        // ステップ遷移制御
         nextToSide.addEventListener('click', () => {
             step1.style.display = 'none';
             step2.style.display = '';
@@ -266,13 +392,12 @@
 
         // 注文確定
         submitOrder.addEventListener('click', async () => {
-            const burger = burgerSelect.value;
-            const side = sideSelect.value;
-            const drink = drinkSelect.value;
-            const totalScore = burgerScores[burger] + sideScores[side] + drinkScores[drink];
-            document.getElementById("output").innerHTML =
-                `${burgerNames[burger]} + ${sideNames[side]} + ${drinkNames[drink]} のセットがおすすめです！（相性スコア：${totalScore.toFixed(2)}）`;
-            await saveToSupabase(burger, side, drink, totalScore);
+            if (!selectedBurger || !selectedSide || !selectedDrink) return;
+            const totalScore = burgerScores[selectedBurger] + sideScores[selectedSide] + drinkScores[selectedDrink];
+            output.innerHTML =
+                `${burgerNames[selectedBurger]} + ${sideNames[selectedSide]} + ${drinkNames[selectedDrink]} のセットがおすすめです！（相性スコア：${totalScore.toFixed(2)}）`;
+            const saved = await saveToSupabase(selectedBurger, selectedSide, selectedDrink, totalScore);
+            if (!saved) return;
             // ステッパーUIを隠し、結果画面だけ表示
             step1.style.display = 'none';
             step2.style.display = 'none';
@@ -286,12 +411,16 @@
         document.getElementById('backToOrder').addEventListener('click', () => {
             resultScreen.style.display = 'none';
             step1.style.display = '';
-            burgerSelect.value = '';
-            sideSelect.value = '';
-            drinkSelect.value = '';
+            selectedBurger = null;
+            selectedSide = null;
+            selectedDrink = null;
             nextToSide.disabled = true;
             nextToDrink.disabled = true;
             submitOrder.disabled = true;
+            // リセットカード選択状態
+            burgerCardList.forEach(card => card.classList.remove('selected'));
+            sideCardList.forEach(card => card.classList.remove('selected'));
+            drinkCardList.forEach(card => card.classList.remove('selected'));
         });
 
         function updateTitleVersion() {
@@ -322,7 +451,6 @@
         );
 
         async function saveToSupabase(burger, side, drink, score) {
-            // サイドとドリンクを結合して「selected」に保存
             const selected = sideNames[side] + " + " + drinkNames[drink];
             const { error } = await supabase.from("history").insert([
                 { burger: burgerNames[burger], selected, score }
@@ -330,8 +458,10 @@
             if (error) {
                 alert("Supabaseへの保存エラー: " + error.message);
                 console.error(error);
+                return false;
             }
-            fetchHistory();
+            await fetchHistory();
+            return true;
         }
 
         async function fetchHistory() {
